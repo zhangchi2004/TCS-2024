@@ -1,0 +1,159 @@
+\documentclass{homework}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{2}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Find $\lambda$ terms representing the logical $\mathrm{or}$ and $\mathrm{not}$
+  functions.
+\end{problem}
+
+\begin{solution}
+  Consider $\lambda xy.x\mathbf{t}y$ for $\mathrm{or}$, then we have the following:
+
+  $\mathrm{or}\, \mathbf{t}\mathbf{t} \betareds \mathbf{t}\mathbf{t}\mathbf{t} \betared (\lambda y.\mathbf{t})\mathbf{t} \betared \mathbf{t}$,
+
+  $\mathrm{or}\, \mathbf{t}\mathbf{f} \betareds \mathbf{t}\mathbf{t}\mathbf{f} \betared (\lambda y.\mathbf{t})\mathbf{f} \betared \mathbf{t}$,
+
+  $\mathrm{or}\, \mathbf{f}\mathbf{t} \betareds \mathbf{f}\mathbf{t}\mathbf{t} \betared (\lambda y.y)\mathbf{t} \betared \mathbf{t}$,
+
+  $\mathrm{or}\, \mathbf{f}\mathbf{f} \betareds \mathbf{f}\mathbf{t}\mathbf{f} \betared (\lambda y.y)\mathbf{f} \betared \mathbf{f}$.
+
+  Consider $\lambda x.x\mathbf{f}\mathbf{t}$ for $\mathrm{not}$, then we have:
+
+  $\mathrm{not}\, \mathbf{t} \betared \mathbf{t}\mathbf{f}\mathbf{t} \betared (\lambda y.\mathbf{f})\mathbf{t} \betared \mathbf{f}$,
+
+  $\mathrm{not}\, \mathbf{f} \betared \mathbf{f}\mathbf{f}\mathbf{t} \betared (\lambda y.y)\mathbf{t} \betared \mathbf{t}$.
+\end{solution}
+
+\begin{problem}
+  Prove that
+  \begin{parts}
+    \part\label{2.a}
+    $\mathbf{add}\, \church{m}\, \church{n} \betareds \church{m+n}$.
+    \part\label{2.b}
+    $\mathbf{mult}\, \church{m}\, \church{n} \betareds \church{m\cdot n}$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \begin{parts}
+    \part\label{2.a}
+    $\mathbf{add}\, \church{m}\, \church{n}\equiv (\lambda mnfx.nf(mfx))\church{m}\,\church{n} \betareds \lambda fx.\church{n}f(\church{m}fx)\\ \equiv \lambda fx.(\lambda fx.f^n x)f((\lambda fx.f^m x)fx)\betareds \lambda fx.(\lambda fx.f^n x)f(f^m x) \\\betareds \lambda fx.(f^n(f^m x)) \equiv \lambda fx.f^{m+n}x\equiv \church{m+n}$
+    \part\label{2.b}
+    $\mathbf{mult}\, \church{m}\, \church{n}\equiv (\lambda mnf.n(mf))\church{m}\,\church{n} \betareds \lambda f.\church{n}(\church{m}f) \\\equiv \lambda f.(\lambda fx.f^n x)((\lambda fx.f^m x)f) \betared \lambda f.(\lambda fx.f^n x)(\lambda x.f^m x) \\\betared \lambda f.(\lambda x.(\lambda x.f^m x)^n x)\equiv \lambda fx.(\lambda x.f^m x)^{n-1}((\lambda x.f^m x)x)\\\betared\lambda fx.(\lambda x.f^m x)^{n-1}(f^m x) \equiv\lambda fx.(\lambda x.f^m x)^{n-2}((\lambda x.f^m x)(f^m x))\\ \betared \lambda fx.(\lambda x.f^m x)^{n-2}(f^m(f^m x)) \equiv \lambda fx.(\lambda x.f^m x)^{n-2}(f^{2m} x)\\\betareds \lambda fx.(\lambda x.f^m x)^{n-k}(f^{k\cdot m} x)[k=1,2,...,n] \\ \betareds \lambda fx.f^{n\cdot m} x \equiv \church{m\cdot n}$
+  \end{parts}
+\end{solution}
+
+\begin{problem}
+  Compute the \(\beta\)-normal forms of the following terms.
+  Are they strongly normalizable?
+  \begin{parts}
+    \part\label{3.a}
+    $(\lambda xy.yx)((\lambda x.xx)(\lambda x.xx))(\lambda xy.y)$.
+    \part\label{3.b}
+    $(\lambda xy.yx)(\mathbf{k} \mathbf{k})(\lambda x.xx)$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \begin{parts}
+    \part\label{3.a}
+    $(\lambda xy.yx)((\lambda x.xx)(\lambda x.xx))(\lambda xy.y) \betared (\lambda y.y((\lambda x.xx)(\lambda x.xx)))(\lambda xy.y) \\\betared (\lambda xy.y)((\lambda x.xx)(\lambda x.xx))\betared \lambda y.y\equiv \mathbf{i}$, which is a normal form.
+    
+    It is not strongly normalizable, because $(\lambda x.xx)(\lambda x.xx)\betared(\lambda x.xx)(\lambda x.xx) $, so the whole term can be $\beta$-reduced to itself if we conduct the reduction on the $((\lambda x.xx)(\lambda x.xx))$ part first, creating an infinite sequence of reductions.
+    \part\label{3.b}
+    $(\lambda xy.yx)(\mathbf{k} \mathbf{k})(\lambda x.xx) \betareds (\lambda x.xx)(\mathbf{k} \mathbf{k}) \equiv (\lambda x.xx)((\lambda xy.x)\mathbf{k}) \\\betared (\lambda x.xx)(\lambda y.\mathbf{k})\betared (\lambda y.\mathbf{k})(\lambda y.\mathbf{k}) \betared\mathbf{k}$, which is a normal form.
+
+    It is strongly normalizable. Easily we can list all the ways of $\beta$-reduction of the term, which all end in finite steps.
+  \end{parts}
+\end{solution}
+
+\begin{problem}
+  Find a representation of the following functions on integers
+  \begin{parts}
+    \part\label{4.a}
+    $f(n) = \begin{cases}\; \text{true} & n \text{ is even},\\
+              \; \text{false} & n \text{ is odd}. \end{cases}$
+    \part\label{4.b}
+    $\exp(n,m) = n^m$.
+    \part\label{4.c}
+    $\mathrm{pred}(n) = \begin{cases}\; 0 & \text{ if } n = 0,\\
+                          \; n-1 & \text{ otherwise.} \end{cases}$ (Hard)
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \begin{parts}
+    \part\label{4.a}
+    Consider $f\equiv\lambda n.n\,\mathrm{not}\,\mathbf{t}\equiv\lambda n.n(\lambda x.x\mathbf{f}\mathbf{t})\mathbf{t}$, then we have: 
+    
+    $f(\church{n})\equiv\church{n}\,\mathrm{not}\,\mathbf{t}\equiv (\lambda fx.f^nx)\mathrm{not}\,\mathbf{t}\betared \mathrm{not}^n \mathbf{t}\betareds \begin{cases}\; \mathbf{t} & n \text{ is even},\\
+      \; \mathbf{f} & n \text{ is odd}. \end{cases}$
+    \part\label{4.b}
+    Consider $\exp \equiv\lambda nm.m(\mathbf{mult}\,n)\church{1}\equiv \lambda nm.m((\lambda nmf.n(mf))n)(\lambda fx.fx)$, then we have:
+
+    $\exp \church{n}\,\church{m} \equiv \church{m}(\mathbf{mult}\,\church{n})\church{1}\equiv (\lambda fx.f^mx)(\mathbf{mult}\,\church{n})\church{1}\equiv(\mathbf{mult}\church{n})^m\church{1}\betareds\church{n^m}$
+
+    \part\label{4.c}
+    To construct a predecessor function, we first define the following functions that form a pair of terms $(a,b)$.
+    \begin{align*}
+    &\mathbf{pair} = \lambda abs.sab\\
+    &\mathbf{first} = \lambda p.p\mathbf{t} \\
+    &\mathbf{second} = \lambda p.p\mathbf{f}
+    \end{align*}
+    By such way, we can use $p = \mathbf{pair}\,ab$ to denote $p=(a,b)$, and $\mathbf{first}\,p$ and $\mathbf{second}\,p$ to denote the first and second element of the pair $p$ respectively, as $\mathbf{first}(\mathbf{pair}\,ab) = \mathbf{pair}\,ab\mathbf{t} = \mathbf{t}ab = a$ and $\mathbf{second}(\mathbf{pair}\,ab) = \mathbf{pair}\,ab\mathbf{f} = \mathbf{f}ab = b$.
+
+    What we want to do is to define a series of pairs like $(\church{0},\church{0}),(\church{0},\church{1}),...,(\church{n-1},\church{n})$ which the $(n+1)$-th pair contains the predecessor of $n$. Inductively, we can define the construction function of the "next" pair in this pair sequence as follows:
+    \begin{align*}
+      \mathbf{nextpair} = \lambda p.\mathbf{pair}\,(\mathbf{second}\,p)\,(\mathbf{succ}(\mathbf{second}\,p))
+    \end{align*}
+    With which we can verify $\mathbf{nextpair}(\mathbf{pair}\,\church{0}\,\church{0})=\mathbf{nextpair}(\mathbf{pair}\,\church{0}\,\church{1})$, and $\mathbf{nextpair}(\mathbf{pair}\,\church{n-1}\,\church{n})=\mathbf{nextpair}(\mathbf{pair}\,\church{n}\,\church{n+1}), n\ge 1$.
+
+    Then for the predecessor for $n$, we only need the $(n+1)$-th pair of the sequence, which happens to be the result of applying the $\mathbf{nextpair}$ function $n$ times on the first pair $(\church{0},\church{0})$. So we have:
+    \begin{align*}
+      \mathrm{pred} = \lambda n.\mathbf{first}\,(n\,\mathbf{nextpair}\,(\mathbf{pair}\,\church{0}\,\church{0}))
+    \end{align*}
+  \end{parts}
+\end{solution}
+
+\begin{problem}
+  Suppose two binary relations $\red_{1}$ and $\red_{2}$ \emph{commute},
+  that is, $s \red_{1} t_{1}$ and $s \red_{2} t_{2}$ implies that there exists
+  $t$ such that $t_{1} \red_{2} t$ and $t_{2} \red_{1} t$.
+  Let $\red_{12}$ be the union of $\red_{1}$ and $\red_{2}$.
+  Prove that if $\red_{1}$ and $\red_{2}$ satisfy the diamond property, then so
+  is $\reds_{12}$.
+\end{problem}
+
+\begin{solution}
+  Say $s\red_{12}u,s\red_{12}v$, then either $s\red_1u$ or $s\red_2u$, also $s\red_2v$ or $s\red_2v$. If $\exists i\in\{1,2\}\,s.t.\,s\red_iu,s\red_iv$, then by the diamond property of $\red_i$, $\exists t\,s.t.\,u\red_it,v\red_it$, then $u\red_{12}t,v\red_{12}t$. In the other case, when $u$ and $v$ are reduced by different relations, say $u\red_1t,v\red_2t$, then by the \emph{commute} property, $\exists t\,s.t.\,u\red_2t,v\red_1t$, which implies $u\red_{12}t,v\red_{12}t$. Thus $\red_{12}$ satisfies the diamond property, which means $\reds_{12}$ satisfies also.
+\end{solution}
+
+\begin{problem}
+  (Optional) Write an algorithm computing the factorial function in Python
+  without using explicit recursion.
+  Sample codes are provided in \textsf{lambda.py}.
+  Note that the use of parenthesis in Python for function application is
+  different from the mathematical way.
+  For example, the term $xyz$ used in classes as an abbreviation for $((xy)z)$
+  should be written as $x(y)(z)$ in Python in order to be consistent with the
+  Python function call convention.
+\end{problem}
+
+\end{document}

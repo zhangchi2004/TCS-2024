@@ -1,0 +1,96 @@
+\documentclass{homework}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{9}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+% \begin{problem}
+%   Prove that any $\PSPACE$-hard problem is also $\NP$-hard.
+% \end{problem}
+
+% \begin{solution}
+
+% \end{solution}
+
+\begin{problem}
+  Prove that $\TQBF$ restricted to formulas where the part following the
+  quantifiers is in conjunctive normal form (CNF) is still $\PSPACE$-complete.
+\end{problem}
+
+\begin{solution}
+  Since all such restricted TQBF formulas are still in TQBF, and since TQBF is in PSPACE, the restricted TQBF is also in PSPACE. We will prove below that they are PSPACE-complete. Since TQBF is PSPACE-complete, we only need to prove that TQBF can be reduced to restricted TQBF in polynomial time.
+
+  For any TQBF formula $\text{(quantifiers)}\phi(x)$, we can use the Tseytin Transformation to transform $\phi(x)$ to CNF. We construct a new variable $y_i$ for all subformulas of $\phi(x)$, such as: $y_1 \leftrightarrow p\land q$ or $y_2 \leftrightarrow y_3 \lor q$. Since all subformulas are represented by $y_i$, the definition of each $y_i$ can be expressed with only one logic operator. We use $y_i\leftrightarrow ...$ to represent this. Say $\phi(x)$ is represented by $y_k$.
+
+  Thus, we can construct an equivalent formula $\varphi(x,y) = y_k\land(y_{k}\leftrightarrow ...)\land(y_{k-1}\leftrightarrow ...)\land ...\land(y_1\leftrightarrow ...)$. For any $x$, $\phi(x)$ is true if and only if $y_k$ is true and all $y_i$s are defined correctly, which means when $y_i$s are chosen correctly (by above definition), $\varphi(x,y)$ is satisfyable. $\varphi(x,y)$ can be transformed to CNF by transforming each substitutions to CNF, using the fact that $a\leftrightarrow b\land c = (a\rightarrow b\land c) \land (a\leftarrow b\land c) = (\neg a \lor (b\land c))\land(\neg b\lor \neg c\lor a) = (\neg a \lor b)\land(\neg a \lor c)\land(\neg b\lor \neg c\lor a)$ and $a\leftrightarrow b\lor c = (a\rightarrow b\lor c) \land (a\leftarrow b\lor c) = (\neg a \lor b\lor c)\land((\neg b\land \neg c)\lor a) = (\neg a \lor b\lor c)\land(\neg b \lor a) \land (\neg c\lor a)$. Say the CNF of $\varphi$ is $\psi$, then $\text{(quantifiers)}\phi(x)\iff \text{(quantifiers)}\exists y_1y_2...y_k\varphi(x,y)\iff \text{(quantifiers)}\exists y_1y_2...y_k\psi(x,y)$
+
+  The above transformation can be done in polynomial time, since $k$ grows linearly with the length of $\phi$ and the transformation steps grows linearly with $k$. Thus any TQBF formula can be transformed in polynomial to a restricted TQBF formula, which means the latter is PSPACE-complete.
+\end{solution}
+
+\begin{problem}
+  Let $\problemsty{SUM} = \{ \tuple{x, y, z} \mid x, y, z > 0 \text{ are binary
+    integers satisfying } x+y=z \}$.
+  Show that $\problemsty{SUM} \in \L$.
+\end{problem}
+
+\begin{solution}
+  Say $x=x_nx_{n-1}...x_1, y=y_ny_{n-1}...y_1, z=z_nz_{n-1}...z_1$, where $n$ is the length of the longest binary integer, adding zeros to the left of integers shorter than $n$.
+
+  For any input $\tuple{x, y, z}$, we can check if $z$ is the sum of $x$ and $y$ by checking if $z_i = x_i\oplus y_i\oplus c_{i-1}$ for $i=1,2,...,n$, where $c_0 = 0$ and $c_i = (x_i+y_i+c_{i-1}\ge 2)$. If for all $i$ the equation holds, then $z = x + y$. We design a Turing machine having a counter counting $i$, and a register storing $c_{i-1}$. Each time, the pointer retrieves $x_i,y_i,z_i$ using the counter $i$, and verify $z_i = x_i\oplus y_i\oplus c_{i-1}$. If it's untrue, reject and halt. Else, update the register $c_i = (x_i+y_i+c_{i-1}\ge 2)$ and the counter $i++$. If the counter hits $n+1$, accept and halt. The Turing machine only uses $O(\log n)$ space to store the counter and the register, since $i\le n+1$ and $c$ is a single bit, thus $\problemsty{SUM} \in \L$.
+\end{solution}
+
+\begin{problem}
+  \begin{parts}
+    \part\label{a} An undirected graph is \emph{bipartite} if its nodes may be divided
+    into two sets so that all edges go from a node in one set to a node in the
+    other set.
+    Show that a graph is bipartite if and only if it doesn’t contain a cycle
+    that has an odd number of nodes.
+    \part\label{b} Let $\problemsty{BIPARTITE} = \{ \tuple{G} \mid G \text{ is a
+      bipartite graph} \}$.
+    Prove that $\problemsty{BIPARTITE}$ is in $\NL$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\begin{parts}
+  \part\label{3.a}If a graph is bipartite, then it can be divided into two sets $A$ and $B$ such that all edges go from a node in $A$ to a node in $B$. If there is an odd cycle in it, say $v_1v_2...v_{2n+1}$. If $v_i\in A$, then there must be $v_{i+1}\in B$. So we know that $v_{2k+1}(\forall k)$ is in the same part with $v_1$. Since $v_1$ and $v_{2n+1}$ are connected, $v_1$ and $v_{2n+1}$ are in the same set, which means the cycle is not bipartite. Thus, if a graph is bipartite, then it doesn't contain a cycle with an odd number of nodes.
+
+  If a graph has no odd cycle, say $G=\{v_1,v_2,...v_n\}$. First we consider the case where $G$ is a connected graph. We choose $v_1\in A$. Each time, we find a node which is connected to a classified node and put it into the different set from its neighbour. Since $G$ is connected, we can always classify all nodes. This algorithm enables that there is an even path between $v_1$ and $v_i$ for $v_i\in A$, and an odd path between $v_1$ and $v_i$ for $v_i\in B$. If some node has neighbour in the same class, say $v_i, v_j\in A$, then there is a cycle $v_iv_1v_j$. Since $v_i$ and $v_j$ are both connected to $v_1$ with a path with even length, say $2x,2y$, this cycle is an odd cycle with length $2x+2y+1$, which raises contradiction.
+
+  So, a graph is bipartite if and only if it doesn't contain any odd cycle.
+  \part\label{3.b}
+  We will prove that BIPARTITE $\in$ coNL, and since coNL $=$ NL, BIPARTITE $\in$ NL.
+  We can use an non-deterministic TM to solve the co-problem of BIPARTITE by guessing odd cycles. For graph $G$ with $n$ nodes, the NTM guesses an initial node first, and each time guesses a node that is connected to the previous node. We keep a counter to count the length of the cycle, and to prevent the NTM's guesses going into an infinite loop. If the NTM's guesses goes back to the initial node and the counter is odd, then the NTM accepts. If the NTM's guesses goes back to the initial node and the counter is even, or the counter hits $n+1$ (which means the guess cycle enters a loop), halt. If there is an odd cycle in $G$, there is always one odd cycle with length $\le n$, as larger cycles must have repeated nodes and can be decomposed to smaller cycles, and composition of even cycles are still even. The NTM accepts $G$ if and only if there is an odd cycle with size $\le n$ in $G$, which is equivalent to the existence of an odd cycle at any size in $G$, which means $G$ is not bipartite. This NTM takes $O(\log n)$ space, since the counter is at most $n+1$ and the current node is a single node. Thus BIPARTITE $\in$ coNL. Since coNL $=$ NL, BIPARTITE $\in$ NL.
+\end{parts}
+\end{solution}
+
+\begin{problem}
+  Let $S(n) \ge \log n$ be a space-constructible function.
+  Show that $\NSPACE(S(n)) = \class{coNSPACE}(S(n))$ is a consequence of
+  $\NL = \class{coNL}$.
+\end{problem}
+
+\begin{solution}
+  Suppose $A\in\NSPACE(S(n))$, then there is an NTM $M$ deciding $A$ in $O(S(n))$ space. For any $x$ with length $n$, $x\in A\iff$ there is a path from the initial state to the accept state in the configuration graph of $M$ with input $x$. Denote this graph as $G_{M,x}$. Suppose $A$ has space complexity $S(n)$, and the writable tape of $M$ is limited in $S(n)$ size, the number of possible configurations in $G_{M_x}$ is $2^{O(S(n))}$. In fact, it's the multiplication of NTM state numbers (constant), possible tape patterns ($2^{S(n)}$) and pointer location ($n+S(n)$). As $S(n)\ge\log n$, $2^{S(n)}\times(n + S(n)) = 2^{S(n)+\log n} + 2^{S(n)+\log S(n)} \le 2^{2S(n)} + 2^{2S(n)} = 2^{O(S(n))}$. Say $G_{M,x}$ has size $V=2^{O(S(n))}$, the PATH problem on this graph is in NL.
+
+  If NL $=$ coNL, then in $O(\log V) = O(S(n))$ space we can verify whether there is no path from the initial state to the accept state in $G_{M,x}$, which means we can verify in $O(S(n))$ space that there exists no proof string supporting $x$, indicating $x\notin A$. Thus, $A\in$ coNSPACE$(S(n))$. Since $A$ is arbitrary, $\NSPACE(S(n))\subseteq$ coNSPACE$(S(n))$.
+
+  Meanwhile, for any $A\in\class{coNSPACE}(S(n))$, $\bar{A}\in\NSPACE(S(n))$. Since $\NSPACE(S(n))\subseteq$ coNSPACE$(S(n))$, we have $\bar{A}\in\class{coNSPACE}(S(n))$, and $A\in \NSPACE(S(n))$. So we have $\NSPACE(S(n)) = \class{coNSPACE}(S(n))$ if $\NL = \class{coNL}$.
+\end{solution}
+
+\end{document}

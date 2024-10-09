@@ -1,0 +1,104 @@
+\documentclass{homework}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{3}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Prove that if terms $a_{1}, a_{2}, \ldots a_{n}$ are in normal form, then so
+  is the list $a_{1} :: a_{2} :: \cdots a_{n} :: \mathbf{nil}$.
+\end{problem}
+
+\begin{solution}
+We only need to prove that if $a,b$ are in normal form, then so is $a::\mathbf{nil}$ and $a::b$. Thus, if $a_i::a_{i+1}::\cdots::a_n::\mathbf{nil}$ is in normal form, then so is $a_{i-1}::a_i::a_{i+1}::\cdots::a_n::\mathbf{nil}$. By induction we can prove the original statement.
+
+If $a,b$ are in normal form, $a::b\equiv\mathbf{pair}\,ab=\lambda x.xab$. To do $\beta$-reduction on this term we have the following approaches: 1. Do the reduction within a single term $x,a$ or $b$ first. 2. Do the reduction on $xa$ first. 3. View $xa$ as a whole and conduct reduction on $(xa)b$ first. Because $x,a,b$ are all in normal form, they can't perform $\beta$-reduction singally. Meanwhile because $x$ is a single variable and does not start with $\lambda$ (so $xa$ does not start with $\lambda$ as well), $xa$ and $(xa)b$ can't be reduced.
+
+Since $\mathbf{nil}=\lambda x.\mathbf{t}$ is in normal form, when terms $a_{1}, a_{2}, \ldots a_{n}$ are also in normal form, by the property proven above $a_n::\mathbf{nil}$ is also a normal form. Then by using this property inductively we can prove that $a_{1} :: a_{2} :: \cdots a_{n} :: \mathbf{nil}$ is also in normal form.
+\end{solution}
+
+\begin{problem}
+  Show that $\mathbf{filter}$ is a special case of $\mathbf{reduce}$ for
+  $\mathbf{filter}$ and $\mathbf{reduce}$ defined in the class.
+\end{problem}
+
+\begin{solution}
+Consider $\mathbf{filter} \equiv \lambda lf.\mathbf{reduce}\,l\,(\lambda ab.(\mathbf{ite}(fa)(\mathbf{cons}\,ab)b))\,\mathbf{nil}$. For any list $l\equiv x::l_1$, since $\mathbf{reduce}\,(h::t)\,f\,z \betareds f\,h\,(\mathbf{reduce}\,t\,f\,z)$, so:
+\begin{align*}
+  \mathbf{filter}\,l\,f &\betareds \mathbf{reduce}\,l\,(\lambda ab.(\mathbf{ite}(fa)(\mathbf{cons}\,ab)b))\,\mathbf{nil}\\&\equiv\mathbf{reduce}\,(x::l_1)\,(\lambda ab.(\mathbf{ite}(fa)(\mathbf{cons}\,ab)b))\,\mathbf{nil}\\&\betareds(\lambda ab.(\mathbf{ite}(fa)(\mathbf{cons}\,ab)b))\,x\,(\mathbf{reduce}\,l_1\,(\lambda ab.(\mathbf{ite}(fa)(\mathbf{cons}\,ab)b))\,\mathbf{nil})\\&\betareds\mathbf{ite}(fx)(\mathbf{cons}\,x(\mathbf{filter}\,l_1\,f))(\mathbf{filter}\,l_1\,f)\\&\betareds\begin{cases}
+    x::\mathbf{filter}\,l_1\,f & \text{if } fx\betareds \mathbf{t}\\
+    \mathbf{filter}\,l_1\,f & \text{otherwise}
+  \end{cases}
+\end{align*}
+which is the inductive definition of $\mathbf{filter}$.
+\end{solution}
+
+\begin{problem}
+  Let $F : {\{0,1\}}^{n} \to \{0,1\}$ be a Boolean function.
+  Prove that there is a $\lambda$ term $f$ representing $F$ in the sense that
+  for all $x_{1}, x_{2}, \ldots, x_{n} \in \{0,1\}$,
+  \begin{equation*}
+    f [x_{1}] [x_{2}] \cdots [x_{n}] \betareds [F(x_{1}, x_{2}, \ldots, x_{n})],
+  \end{equation*}
+  where $[0] \equiv \mathbf{f}$ and $[1] \equiv \mathbf{t}$.
+\end{problem}
+
+\begin{solution}
+Use indution on $n$. When $n=1$, then there are only four functions, $F(x)=x$, $F(x)=\neg x$, $F(x)=0$ and $F(x)=1$, which can be represented by $\lambda x.x$, $\lambda x.\mathbf{not}\,x\equiv \lambda x.x\mathbf{ft}$, $\lambda x.\mathbf{t}$ and $\lambda x.\mathbf{f}$ respectively.
+
+If the statement holds for $n$-variable functions, below we'll prove the case $n+1$. Consider functions $F(x_1,x_2\cdots x_n, 1)$ and $F(x_1,x_2\cdots x_n, 0)$ which are both $n$-variable functions. We can use the induction hypothesis to represent them by $\lambda$ terms $f_1$ and $f_0$ respectively. Then we can define $f\equiv \lambda x_1 x_2\cdots x_n x_{n+1}.(\mathbf{ite}\,x_{n+1}(f_1 x_1 x_2\cdots x_n)(f_0 x_1 x_2\cdots x_n))$ to represent $F$, as:
+\begin{align*}
+  f [x_{1}] [x_{2}] \cdots [x_{n+1}]&\betareds \mathbf{ite}[x_{n+1}](f_1 [x_{1}] [x_{2}] \cdots [x_{n}])(f_0 [x_{1}] [x_{2}] \cdots [x_{n}])\\&\betareds \mathbf{ite}[x_{n+1}][F(x_1,x_2\cdots x_n, 1)][F(x_1,x_2\cdots x_n, 0)]\\ &\betareds\begin{cases}
+    [F(x_1,x_2\cdots x_n,1)] & \text{if } x_{n+1} = 1\\
+    [F(x_1,x_2\cdots x_n,0)] & \text{if } x_{n+1} = 0
+  \end{cases}\\ &\equiv [F(x_1,x_2\cdots x_n,x_{n+1})]
+\end{align*}
+\end{solution}
+
+\begin{problem}
+  Let $C \subseteq \Sigma^{*}$ be a language.
+  Prove that $C$ is Turing-recognizable if and only if there is a decidable language $D$
+  such that
+  \begin{equation*}
+    C = \{ x \mid \exists y \text{ such that } \tuple{x,y} \in D\}.
+  \end{equation*}
+\end{problem}
+
+\begin{solution}
+Say $y\in \Sigma_1^*$. Assume $\Sigma_1$ is a finite charset, then $\Sigma_1^*$ is countable. Thus we can assign a positive integer starting with $1$ to each $y\in\Sigma_1^*$, e.g. $y_1,y_2,...,y_i,...$, and this sequence can cover all strings in $\Sigma_1^*$. 
+
+If there exists such $D$ which is Turing-decidable, suppose TM $M_1$ can accept $D$ and always halt, then we can define a TM $M_2$ to accept $C$ as such: 
+\begin{algorithm*}[H]
+  \KwData{$x$}
+  i=1\;
+  \While{True}{
+    \If{$M_1$ accepts $\tuple{x,y_i}$}{
+      accept and halt\;
+    }
+    \Else{
+      i=i+1\;
+    }
+  }
+  \caption{$M_2$ to accept $C$}
+\end{algorithm*}
+
+Since $M_1$ always halt, each step in the While loop will end in finite steps. For any $x\in C$, by condition $C = \{ x \mid \exists y\, s.t. \tuple{x,y} \in D\}$ we know $\exists k\in\mathbb{Z}_+\, s.t. \tuple{x,y_k}\in D$. So with $k$ steps of iteration, each ending in finite steps, $M_2$ will accept $x$. For any $x\notin C$, $\forall y\in\Sigma_1^*$, $\tuple{x,y}\notin D$, so $M_2$ will never accept $x$.
+
+On the other hand, if $C$ is Turing recognizable, say by TM $M_2$, then $\forall x\in C, \exists T_x\in\mathbb{Z}_+$ such that $M_2$ will halt and accept $x$ in $T_x$ steps. Thus we can consider $D=\{\tuple{x,y}\mid x\in C, y\in \Sigma_1^{T_x}\}$. By this definition we can easily verify $C = \{ x \mid \exists y\, s.t. \tuple{x,y} \in D\}$. Use TM $M_1$ to accept $D$: $M_1$ receives $\tuple{x,y}$ and put $x$ into $M_2$ and run only $|y|=T_x$ steps. If $M_2$ accepts $x$ in $T_x$ steps, then $M_1$ accepts $\tuple{x,y}$, otherwise it rejects. Obviously all $\tuple{x,y}\in D$ can be accepted by $M_1$. All tuples $\tuple{x,y}$ acceptable by $M_1$ satisfies $x\in C,|y|=T_x$ and by definition is in $D$. Also since $M_1$ will always halt in finite steps (consists of $T_x$ steps of simulation and the finite steps of preparing the configuration for $M_2$), so $D$ is Turing-decidable.
+\end{solution}
+
+\end{document}

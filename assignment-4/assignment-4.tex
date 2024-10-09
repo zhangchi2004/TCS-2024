@@ -1,0 +1,162 @@
+\documentclass{homework}
+\usepackage[ruled,linesnumbered]{algorithm2e}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{4}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Give a model for the sentence
+  \begin{equation*}
+    \begin{split}
+      \phi_{\mathrm{lt}}
+      & = \forall x\, [R_{1}(x, x)]\\
+      & \; \land \forall x,y\, [R_{1}(x,y) \leftrightarrow R_{1}(y,x)]\\
+      & \; \land \forall x,y,z\, [(R_{1}(x,y) \land R_{1}(y,z))
+        \rightarrow R_{1}(x,z)]\\
+      & \; \land \forall x,y\, [R_{1}(x,y) \rightarrow \neg R_{2}(x,y)]\\
+      & \; \land \forall x,y\, [\neg R_{1}(x,y) \rightarrow (R_{2}(x,y)
+        \oplus R_{2}(y,x))]\\
+      & \; \land \forall x,y,z\, [(R_{2}(x,y) \land R_{2}(y,z))
+        \rightarrow R_{2}(x,z)]\\
+      & \; \land \forall x \exists y [ R_{2}(x,y) ].
+    \end{split}
+  \end{equation*}
+
+\end{problem}
+
+\begin{solution}
+  Consider the model $\mathcal{U}$ as such:
+  \begin{enumerate}
+    \item Universe $U = \mathbb{Z}$;
+    \item Relation $R_1 = \{(x,y)|x=y\}$;
+    \item Relation $R_2 = \{(x,y)|x<y\}$.
+  \end{enumerate}
+
+  Then the first three lines of the condition are satisfied by the reflexive, symmetric and transitive properties of "$=$". The fourth and fifth lines are satisfied by the trichotomy of the strict total order "$<$". The sixth line is the transitive property of "$<$". The seventh line is satisfied by the fact that there is no biggest integer. 
+\end{solution}
+
+\begin{problem}
+  Prove that the Halting problem with empty input
+  \begin{equation*}
+    \mathrm{HALT}_{\varepsilon} = \{ \desc{M} \mid M
+    \text{ halts on empty input.}\}
+  \end{equation*}
+  is undecidable.
+\end{problem}
+
+\begin{solution}
+  Suppose that $\mathrm{HALT}_{\varepsilon}$ is decidable, and TM $H$ is the always-halting Turing Machine that recognize $\mathrm{HALT}_{\varepsilon}$
+  
+  Construct another TM $B$, which, on any input:
+  \begin{enumerate}
+    \item Obtain its own code $\desc{B}$;
+    \item Run $H(\desc{B})$;
+    \begin{enumerate}
+      \item if $H(\desc{B})$ accepts, loop;
+      \item if $H(\desc{B})$ rejects, halt.
+    \end{enumerate}
+  \end{enumerate}
+  Because $H$ always halts we can always get the answer of $H(\desc{B})$ in finite time, So the behavior of $B$ is well-defined.
+
+  Then we can consider the question of whether $B$ halts on empty input. If $B$ halts, then $\desc{B}\in\mathrm{HALT}_{\varepsilon}$, so $H(\desc{B})$ should accept. This lead $B(\varepsilon)$ to case 2.(a), and so $B(\varepsilon)$ should loop, which is a contradiction. 
+  
+  If $B$ loops on empty input, then $H(\desc{B})$ should reject, and $B(\varepsilon)$ should go into case 2.(b) and halt, where contradiction also occurs.
+  
+  Thus we can conclude that such always-halting $H$ does not exist, and $\mathrm{HALT}_{\varepsilon}$ is undecidable.
+\end{solution}
+
+\begin{problem}
+  Show that any infinite subset of $\mathrm{MIN}_{\text{TM}}$ is not
+  Turing-recognizable where $\mathrm{MIN}_{\text{TM}}$ is a language defined in
+  the class.
+\end{problem}
+
+\begin{solution}
+Suppose $S\subset \mathrm{MIN}_{\text{TM}}$ is an infinite TM-recognizable subset, and TM $R$ is the machine that can recognize strings in $S$. Now we will construct an enumerator $E$ that enumerates all TMs in $S$. Because the set of all TMs are countable (since they are all finite-length strings), we can denote them as $M_1,M_2,M_3,...$. The enumerator $E$ can be constructed as follows:
+
+\begin{algorithm*}[H]
+  \For{$i=1,2,3,...$}{
+    Run $R$ on $M_1,M_2,...,M_i$ for $i$ steps;\\
+    Print all $M_j$ that $R$ accepts within $i$ steps and hasn't been printed before.\\
+  }
+  \caption{Enumerator for $S$}
+\end{algorithm*}
+
+As all strings in $S$ can be accepted by $R$ in finite steps, say $M_k\in S$ is accepted by $R$ in $m$ steps, then $M_k$ will be enumerated by $E$ in the $\max{m,k}$-th iteration. Thus all TMs in $S$ will be enumerated by $E$ in finite steps.
+
+Based on the enumerator $E$, we can construct a TM $C$ as such:
+
+On input $w$:
+\begin{enumerate}
+  \item obtain its own code $\desc{C}$;
+  \item run $E$ until a machine $D$ appears such that $|\desc{D}| > |\desc{C}|$;
+  \item simulate $D$ on $w$.
+\end{enumerate}
+
+The TM $D$ with a longer description is can always be found in finite steps by the enumerator because $S$ is infinite. If the description length of TMs in $S$ has an upper bound then the number of elements in $S$ will be limited. So we can ensure the TM $C$ is well-defined.
+
+Meanwhile we can see that TM $C$ is equivalent to $D$ and has a shorter description, which means that $D$ isn't the minimal machine that conduct what it does. This raises a contradiction to $D\in S\subset \mathrm{MIN}_{\text{TM}}$. Thus we can conclude that $S$ is not Turing-recognizable.
+
+
+\end{solution}
+
+% \begin{problem}
+%   Let $S = \bigl\{ \desc{M} \mid M \text{ is a TM and } L(M) = \{\desc{M}\} \bigr\}$.
+%   Prove that neither $S$ nor the complement of $S$ is Turing-recognizable.
+% \end{problem}
+
+% \begin{solution}
+
+% \end{solution}
+
+\begin{problem}
+  \begin{parts}
+    \part\label{smn}
+    Prove a special case of the S-m-n theorem, the Currying
+    technique for Turing machines.
+    That is, show that there is a computable function
+    $S_{1}^{1} : \Sigma^{*} \times \Sigma^{*} \to \Sigma^{*}$ mapping the
+    description of Turing machine $T$ and input $x$ to the description of a
+    Turing machine $S$ such that (1) $S$ on input $y$ computes the same output
+    as $T$ on input $\tuple{x, y}$ if $T$ halts; and (2) $S$ loops on input $y$
+    if $T$ loops on input $\tuple{x, y}$.
+    \part\label{srt}
+    Prove Kleene's recursion theorem by \cref{smn} and Roger's fixed-point
+    theorem.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\begin{parts}
+  \part\label{4.1}
+  Consider TM $M$ as such:
+
+  On input $\tuple{\desc{T},x}$:
+  \begin{enumerate}
+    \item Construct TM $S$: "On input $y$, simulate $T$ on input $\tuple{x,y}$";
+    \item Print $\desc{S}$.
+  \end{enumerate}
+
+  \part\label{4.2}
+  We want to prove that for any computable function $t:\Sigma^*\times\Sigma^*\to\Sigma^*$, there exists a TM $R$ for computable function $r: \Sigma^*\to\Sigma^*,r(w)=t(\desc{R},w)$. For any such $t$, by item (a) we have TM $S_1^1 \,s.t.\, S_1^1(\desc{T},x) = S$ where $S(y) = T(x,y)$. Since $S_1^1$ itself is computable we can construct, by item (a), another TM $S_T\,s.t.\,S_T(w) = S_1^1(\desc{T},w)$.
+
+  By the Roger's fixed-point theorem, there exists TM $R$ such that $S_T(\desc{R})$ describes a TM equivalent to $R$, which means $R$ is equivalent to $S_T(\desc{R}) = S_1^1(\desc{T},\desc{R}) = S$ where $S(y) = T(\desc{R},y)$. So for any input $w$, $R(w) = S(w) = T(\desc{R},w)$, which is the desired result.
+  \end{parts}
+\end{solution}
+
+\end{document}

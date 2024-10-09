@@ -1,0 +1,179 @@
+\documentclass{homework}
+\usepackage{bussproofs}
+\EnableBpAbbreviations
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{1}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Decide whether the following is a $\lambda$ term (or an abbreviation of a
+  $\lambda$ term).
+  If it is not, explain the reason.
+  \begin{parts}
+    \part\label{1.a}
+    $\lambda x . x x x$
+    \part\label{1.b}
+    $\lambda \lambda x. x $
+    \part\label{1.c}
+    $\lambda y. (\lambda x. x)$
+    \part\label{1.d}
+    $\lambda uv.(((xxy)xy)y)$
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+
+  \ref{1.a} % chktex 2
+  Yes.
+
+  \ref{1.b} % chktex 2
+  No. two $\lambda$ in a row unseparated isn't allowed by the definition of $\lambda$ term.
+
+  \ref{1.c}
+  Yes.
+
+  \ref{1.d}
+  Yes.
+
+\end{solution}
+
+\begin{problem}
+  Compute the terms represented by the following substitutions:
+  \begin{parts}
+    \part\label{2.a}
+    $(xyz)[y/z]$.
+    \part\label{2.b}
+    $(\lambda x.x)[y/z]$.
+    \part\label{2.c}
+    $(\lambda y.xy)[yy/x]$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \ref{2.a}
+  $(xyz)[y/z] = xyy$.
+
+  \ref{2.b}
+  $(\lambda x.x)[y/z] = \lambda x.x$.
+
+  \ref{2.c}
+  $(\lambda y.xy)[yy/x] = \lambda z.xz[yy/x] = \lambda z.yyz$.
+\end{solution}
+
+\begin{problem}
+  Prove the following equalities in the theory of $\lambda\beta$.
+  You need to draw the ``proof tree'' using the rules we defined in the lecture.
+  \begin{parts}
+    \part\label{3.a}
+    $\lambda uv.v = \lambda u.(\lambda x.x) (\lambda u.u)$.
+    \part\label{3.b}
+    $\lambda uv.(\lambda xy.y) uv = \lambda ab.b$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \ref{3.a}
+  To make sure that the width of the proof tree does not exceed the paper's edge, we split the proof tree into two parts to complete it.
+  \begin{prooftree}
+    \AXC{}
+    \LeftLabel{(refl)}
+    \UIC{$\lambda x.x = \lambda x.x$}
+    \AXC{}
+    \LeftLabel{($\alpha$)}
+    \UIC{$\lambda u.u = \lambda v.v$}
+    \LeftLabel{(appl)}
+    \BIC{$(\lambda x.x) (\lambda u.u) = (\lambda x.x) (\lambda v.v)$}
+    \AXC{}
+    \LeftLabel{($\beta$)}
+    \UIC{$(\lambda x.x) (\lambda v.v) = \lambda v.v$}
+    \LeftLabel{(trans)}
+    \BIC{$(\lambda x.x) (\lambda u.u) = \lambda v.v$}
+    \LeftLabel{(abs)}
+    \UIC{$\lambda u.(\lambda x.x) (\lambda u.u) = \lambda u.(\lambda v.v)$}
+  \end{prooftree}
+  \begin{prooftree}
+    \AXC{[above]}
+    \LeftLabel{(abs)}
+    \UIC{$\lambda u.(\lambda x.x) (\lambda u.u) = \lambda u.(\lambda v.v)$}
+    \AXC{}
+    \LeftLabel{(abbr)}
+    \UIC{$\lambda u.(\lambda v.v) = \lambda uv.v$}
+    \LeftLabel{(trans)}
+    \BIC{$\lambda u.(\lambda x.x) (\lambda u.u) = \lambda uv.v$}
+    \LeftLabel{(sym)}
+    \UIC{$\lambda uv.v = \lambda u.(\lambda x.x) (\lambda u.u)$}
+  \end{prooftree}
+
+  \ref{3.b}
+  \begin{prooftree}
+    \AXC{}
+    \LeftLabel{($\beta$)}
+    \UIC{$(\lambda xy.y)u = \lambda y.y$}
+    \AXC{}
+    \LeftLabel{(refl)}
+    \UIC{$v=v$}
+    \LeftLabel{(appl)}
+    \BIC{$(\lambda xy.y)uv = (\lambda y.y)v$}
+    \AXC{}
+    \LeftLabel{($\beta$)}
+    \UIC{$(\lambda y.y)v = v$}
+    \LeftLabel{(trans)}
+    \BIC{$(\lambda xy.y)uv = v$}
+    \LeftLabel{(abs)}
+    \UIC{$\lambda uv.(\lambda xy.y) uv = \lambda uv.v$}
+    \AXC{}
+    \LeftLabel{($\alpha$)}
+    \UIC{$\lambda uv.v = \lambda ab.b$}
+    \LeftLabel{(trans)}
+    \BIC{$\lambda uv.(\lambda xy.y) uv = \lambda ab.b$}
+  \end{prooftree}
+\end{solution}
+
+\begin{problem}
+  \begin{parts}
+    \part\label{4.a}
+    Find a $\lambda$ term $s$ such that the equality $stu = ut$ holds in
+    $\lambda\beta$ for all terms $t$ and $u$.
+    \part\label{4.b}
+    Show that there is a $\lambda$ term $s$ such that for all term $t$,
+    $\lambda\beta \vdash st = ss$.
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+  \ref{4.a}
+  Consider $s = \lambda xy.yx$, then $\lambda\beta \vdash stu = (\lambda xy.yx)tu = \lambda x.(\lambda y.yx)tu = (\lambda y.yt)u = ut, \forall t,u\in \Lambda$. 
+  
+  \ref{4.b}
+  Consider $s = \lambda x.y$, then $\lambda\beta \vdash st = (\lambda x.y)t = y, \forall t\in \Lambda$. Meanwhile $\lambda\beta \vdash ss = (\lambda x.y)s = y$, so $\lambda\beta \vdash st = ss, \forall t\in \Lambda$.
+\end{solution}
+
+\begin{problem}
+  Show that there is a term $G$ such that all fixed-point combinators can be
+  \emph{characterized} as the fixed points of $G$.
+  That is, $s$ is a fixed-point combinator if and only if
+  $\lambda\beta \vdash G s = s$.
+\end{problem}
+
+\begin{solution}
+  Consider $G = \lambda fr.r(fr)$. We'll first prove that all the fixed points of G are FPCs, and then prove the converse.
+  Say $s$ is $G$'s fixed point, then it satisfies $\lambda\beta \vdash s = Gs = (\lambda fr.r(fr))s = \lambda r.r(sr)$. So $\forall t\in\Lambda$, $\lambda\beta \vdash st = (\lambda r.r(sr))t = t(st)$, which means $s$ is a FPC.
+  
+  Conversely, if $s$ is a FPC, giving $\lambda\beta \vdash st = (\lambda r.r(sr))t = t(st), \forall t\in \Lambda$. We suppose $s$ has the form $\lambda x.w$. Then $\lambda\beta \vdash Gs = (\lambda fr.r(fr))s = \lambda r.r(sr) =_{FPC} \lambda r.sr = \lambda r.(\lambda x.w)r =_\beta \lambda r.(w[r/x]) =_\alpha^* \lambda x.(w[x/x]) = \lambda x.w = s$. In the * step, the $\alpha$ conversion can be applied because $x$ exists no more in $w[r/x]$ and thus is not a free variable, so renaming the bounded variable to $x$ raises no conflict.
+\end{solution}
+
+\end{document}

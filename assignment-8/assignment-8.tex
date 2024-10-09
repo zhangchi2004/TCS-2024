@@ -1,0 +1,84 @@
+\documentclass{homework}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{8}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Two aliens have arrived on Earth, each claiming to possess a machine that can
+  solve the $\SAT$ problem in polynomial time.
+  However, only one of these machines is genuine, while the other is a
+  counterfeit.
+  Your task is to design a protocol for solving the $\SAT$ problem in polynomial
+  time by asking questions to their machines.
+\end{problem}
+
+\begin{solution}
+  As shown in class, if we have a yes/no machine $D$ deciding the SAT problem, we can find the solution in polynomial time by checking, for $i$ in $1,2,3,...,n$, $D(\phi(a_1,a_2,...,a_{i-1},0,x_{i+1},x_{i+2},...,x_n))$ and let $a_i=0$ if it accepts and $a_i=1$ if otherwise. Finally we check if $a_1,a_2,...,a_n$ is a solution. 
+  
+  Denote the two machines as $T_1$ and $T_2$. Following the above procedure, we can construct a machine $T$ as follows:
+
+  On input $\phi$:
+  \begin{enumerate}
+    \item For $i$ in $1,2,...,n$:
+    \item \begin{enumerate}
+      \item check $T_1(\phi(a_1,a_2,...,a_{i-1},0,x_{i+1},x_{i+2},...,x_n))$
+      \item Set $a_i=0$ if it accepts and $a_i=1$ if otherwise.
+      \item check $T_2(\phi(b_1,b_2,...,b_{i-1},0,x_{i+1},x_{i+2},...,x_n))$
+      \item Set $b_i=0$ if it accepts and $b_i=1$ if otherwise.
+    \end{enumerate}
+    \item check $\phi(a_1,a_2,...,a_n)$ and $\phi(b_1,b_2,...,b_n)$ by classical method. If at least one of them is correct, accept. Else, reject.
+    \end{enumerate}
+  \end{solution}
+  Because one of the two machines is correct, we can suppose it's $T_1$. This way, $a_1,...,a_n$ should be the correct solution if $\phi$ is satisfiabe, and $T$ will accept $\phi$. If $\phi$ isn't satisfiable, then apparently $a_1,...,a_n$ and $b_1,...,b_n$ both can't satisfy $\phi$, so $T$ will reject $\phi$. Therefore, $T$ is a correct machine to decide the SAT problem.
+
+  Meanwhile, since we can do the varification in polynomial time, and $T_1$ and $T_2$ can give the answer in polynomial time and we run the two machines for $n$ times, so $T$ can decide the SAT problem in polynomial time.
+% \begin{problem}
+%   Prove that if $A \in \P$, then $\P^A = \P$.
+% \end{problem}
+
+% \begin{solution}
+
+% \end{solution}
+
+% \begin{problem}
+%   \begin{parts}
+%     \part\label{a} Let $C \subseteq {\{0,1\}}^{*}$ be a language.
+%     Define another unary language
+%     \begin{equation*}
+%       L(C) = \{ 1^{n} \mid \text{all strings } x \text{ of length } n
+%         \text{ is in } C \}.
+%     \end{equation*}
+%     Prove that $L(C) \in \coNP^{C}$ for all $C$.
+%     \part\label{b}
+%     A DNF formula is the logical OR of terms where each term is the logical AND
+%     of literals.
+%     The width of a DNF formula is the maximum number of literals in a term and
+%     the size of of it is the number of terms.
+%     Prove that $x_{1} \land x_{2} \land \cdots \land x_{N}$ cannot be computed
+%     by a DNF formula $\varphi(x_{1}, x_{2}, \ldots, x_{N})$ of width less then
+%     $N$.
+%     \part\label{c} Use \cref{b} to construct an oracle $C$ such that
+%     $L(C) \not\in \NP^{C}$ thereby showing that $\NP^{C} \ne \coNP^{C}$.
+%   \end{parts}
+% \end{problem}
+
+% \begin{solution}
+
+% \end{solution}
+
+\end{document}

@@ -1,0 +1,207 @@
+\documentclass{homework}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{10}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}\label{1}
+  \begin{parts}
+    \part\label{1.a}
+    Let $X$ be a random variable taking values in $[0,1]$.
+    Prove that if $\E(X) = \eps$, then
+    \begin{equation*}
+      \Pr \Bigl(X \ge \frac{\eps}{2} \Bigr) \ge \frac{\eps}{2}.
+    \end{equation*}
+    \part\label{1.b}
+    Let $X \ge 0$ be a random variable. Prove that
+    \begin{equation*}
+      \Pr (X = 0) \le \frac{\Var(X)}{{\bigl(\E(X)\bigr)}^{2}}.
+    \end{equation*}
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\ref{1.a}
+Since $\E(X)=\eps$, say the PDF of $X$ is $p(x)$, where $p(x)\ge 0$ and $\int_0^1 p(x)dx=1$, we have
+\begin{align*}
+  \eps &= \E(X) = \int_{0}^{1}xp(x)dx = \int_{0}^{\frac{\eps}{2}}xp(x)dx + \int_{\frac{\eps}{2}}^1xp(x)dx\\
+  &\le \frac{\eps}{2}\int_{0}^{\frac{\eps}{2}}p(x)dx + 1\times \int_{\frac{\eps}{2}}^1p(x)dx\\
+  &\le \frac{\eps}{2}\int_{0}^1p(x)dx +\int_{\frac{\eps}{2}}^1p(x)dx\\
+  &=\frac{\eps}{2} + \Pr \Bigl(X \ge \frac{\eps}{2} \Bigr).
+\end{align*}
+So \begin{equation*}
+  \Pr \Bigl(X \ge \frac{\eps}{2} \Bigr) \ge \frac{\eps}{2}.
+\end{equation*}
+\ref{1.b}
+By Chebychev's inequality, we have
+\begin{align*}
+  \Pr(|X-\E(x)|\ge t)\le \frac{\Var(X)}{t^{2}}.
+\end{align*}
+By letting $t = \E(x)>0$ (since $X\ge 0$, and $\E(x)$ is placed in the denominator so it's none-zero), we have:
+\begin{align*}
+  \Pr(X=0)\le \Pr(X\le 0 \text{ or } X\ge 2\E(x)) \le \frac{\Var(X)}{{\bigl(\E(X)\bigr)}^{2}}.
+\end{align*}
+\end{solution}
+
+
+\begin{problem}
+  Let $\mathrm{RandomSign}(n)$ be the distribution of vectors of $n$ entries
+  where each entry is independently chosen to be $\pm 1$ with probability
+  $\frac{1}{2}$.
+  Sample $m$ vectors
+  $\mathbf{v}^{(1)}, \mathbf{v}^{(2)}, \ldots, \mathbf{v}^{(m)} \sim \mathrm{RandomSign}(n)$.
+  Define the normalized vectors $\mathbf{w}^{(i)} = \mathbf{v}^{(i)} / \sqrt{n}$
+  so that $\norm{\mathbf{w}^{(i)}} = 1$ for all $i = 1, 2, \ldots, m$.
+  Prove the following claims:
+  \begin{parts}
+    \part\label{2.a} For all $i \ne j$, the inner product
+    $\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}} = \sum_{k} \mathbf{w}^{i}_{k} \mathbf{w}^{j}_{k}$
+    is small with high probability.
+    That is,
+    \begin{equation*}
+      \Pr \bigl( \abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}} \ge \delta \bigr)
+      \le \exp \Bigl( - \Omega \bigl( \delta^{2} n \bigr) \Bigr).
+    \end{equation*}
+    \part\label{2.b} There exists some $m = \exp (\Omega(\delta^{2} n))$ such that the
+    $m$ vectors are pairwise almost-orthogonal with high probability.
+    More precisely,
+    \begin{equation*}
+      \Pr \Bigl ( \abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}
+      \le \delta \text{ for all pairs } i\ne j \Bigr) \ge 0.99.
+    \end{equation*}
+    (Note: By probabilistic method, this proves that there are exponentially
+    many almost-orthogonal unit vectors in $\real^{n}$ even though there are at most
+    $n$ exactly orthogonal vectors.)
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\ref{2.a}
+As $\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}} = \sum_{k} \mathbf{w}^{i}_{k} \mathbf{w}^{j}_{k} = \frac{1}{n} \sum_{k} \mathbf{v}^{i}_{k} \mathbf{v}^{j}_{k}$, We use random variable $X_k\in\{-1,1\}$ to denote $\mathbf{v}^{i}_{k} \mathbf{v}^{j}_{k}$. Then the inner product became the average of $X_k$'s. 
+
+To make $\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}\ge \delta$ we need $\sum_k X_k\ge \delta n$. By Chernoff's inequality, we have:
+\begin{align*}
+  \Pr(\sum_k X_k\ge t)&= \Pr\bigl(\exp(\lambda\sum_k X_k)\ge \exp(\lambda t)\bigr)
+  = \Pr\bigl(\prod_k \exp(\lambda X_k)\ge \exp(\lambda t)\bigr)\\
+  &\le \frac{\E(\prod_k \exp(\lambda X_k))}{\exp(\lambda t)}
+  = \frac{\E(e^{\lambda X_k})^n}{e^{\lambda t}}
+  \le \frac{e^{\frac{\lambda^2}{2}n}}{e^{\lambda t}} 
+  = e^{\frac{\lambda^2}{2}n-\lambda t} = e^{-\frac{t^2}{2n}}.
+\end{align*}
+When we choose $\lambda = \frac{t}{n}$.
+
+By taking $t=\delta n$, and by symmetry, we have:
+\begin{align*}
+  &\Pr \bigl( \abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}} \ge \delta \bigr) = 2\Pr \bigl( {\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}\ge \delta \bigr) \\
+  &= 2\Pr(\sum_k X_k\ge \delta n) \le 2e^{-\frac{1}{2}\delta^2 n} = \exp \Bigl( - \Omega \bigl( \delta^{2} n \bigr) \Bigr).
+\end{align*}
+
+\ref{2.b}
+Take $m = \exp(k\delta^2 n) = \exp(\Omega (\delta^2 n))$, then by union bound we have:
+\begin{align*}
+  &\Pr \Bigl( \abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}
+  \le \delta \text{ for all pairs } i\ne j\Bigr) \\
+  =& 1 - \Pr \bigl( \abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}>\delta \text{ for some pairs }i\ne j \bigr)\\
+  =& 1 - \Pr\bigl(\bigcup_{i\ne j}\abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}>\delta\bigr)\\
+  \ge & 1 - \sum_{i\ne j}\Pr\bigl(\abs{\ip{\mathbf{w}^{(i)}}{\mathbf{w}^{(j)}}}>\delta\bigr)\\
+  =& 1 - 2\exp \Bigl( -\frac{1}{2}\delta^{2} n \Bigr){\binom{m}{2}}\\
+  \ge& 1 - \exp \Bigl( -\frac{1}{2}\delta^{2} n \Bigr)m^2\\
+  \ge& 1-\exp\bigl(-\frac{1}{2}\delta^2 n + 2k\delta^2 n\bigr).
+\end{align*}
+Take $k=0.1$ for instance, then for $\delta^2 n > \frac{\log 100}{0.3}$ we have $1-\exp\bigl(-\frac{1}{2}\delta^2 n + 2k\delta^2 n\bigr)\ge 0.99$. which means for large enough $\delta^2 n > \frac{\log 100}{0.3}$, $m = \exp(0.1\times \delta^2 n) = \exp(\Omega (\delta^2 n))$ satisfies demands. 
+
+\end{solution}
+
+\begin{problem}
+  Let $\mathrm{RandomGraph}(n, p)$ be the distribution of random graphs of $n$
+  vertices where, for each pair of vertices $u, v$, $\{u, v\}$ is chosen as an
+  edge of the graph independently with probability $p$.
+  Prove the following for such a random graph
+  $G \sim \mathrm{RandomGraph}(n,p)$.
+  \begin{parts}
+    \part\label{3.a} If $p = o(n^{-2/3})$,
+    \begin{equation*}
+      \lim_{n \to \infty} \Pr(G \text{ constains a $4$-clique}) = 0.
+    \end{equation*}
+    \part\label{3.b} If $p = \omega(n^{-2/3})$,
+    \begin{equation*}
+      \lim_{n \to \infty} \Pr(G \text{ does not constain a $4$-clique}) = 0.
+    \end{equation*}
+    (Hint: Use Part~\ref{1.b} of Problem~\ref{1} and you need to carefully
+    calculate the probability of 4-cliques occurring simultaneously on vertex
+    sets $A$ and $B$ when $\abs{A \cap B} \ge 2$.)
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\ref{3.a}
+The probability that a $4$-clique is present is
+\begin{align*}
+  \Pr(G \text{ contains a $4$-clique}) &= \Pr(\bigcup_{a\neq b\neq c\neq d\in V} abcd \text{ is a four clique}) \\
+  &= \Pr(\bigcup_{a\neq b\neq c\neq d\in V}ab,ac,ad,bc,bd,cd\text{ are edges})\\
+  &\le \sum_{a\neq b\neq c\neq d\in V} \Pr(ab,ac,ad,bc,bd,cd\text{ are edges}) \\
+  &= \binom{n}{4}p^6 \le n^4 (o(n^{-2/3}))^6 = o(n^4 n^{-4}) = o(1).
+\end{align*}
+So:
+\begin{align*}
+  \lim_{n \to \infty} \Pr(G \text{ contains a $4$-clique}) 
+  \le \lim_{n \to \infty} o(1)=0.
+\end{align*}
+As the probability is non-negative, so the limit is $0$.
+
+\ref{3.b}
+Consider all subsets with four vertices $S\subset V,|S|=4$. Let $X_S$ be an indicator valuing $1$ when $S$ is a 4-clique else $0$. Say the total number of 4-cliques is $X$, which means "$G$ does not contain a 4-clique" $\iff X=0$. Then we have:
+\begin{align*}
+  \E(X) = \E(\sum_{S\subset V,|S|=4} X_S) = \sum_{S\subset V,|S|=4} \E(X_S) = \binom{n}{4}p^6.
+\end{align*}
+Meanwhile, the variance of $X$ is:
+\begin{align*}
+  \Var(X) = \sum_{S} \Var(X_S) + \sum_{S_1\ne S_2}\mathrm{Cov}(X_{S_1},X_{S_2}) 
+\end{align*}
+When $|S_1\cap S_2|\le 1$, $X_{S_1}$ and $X_{S_2}$ are independent because the cliques have no common edges, so the covariance is $0$. When $|S_1\cap S_2| = 2$, then there are $11$ edges in $S_1\cup S_2$ if they are both cliques. Thus the covariance is:
+\begin{align*}
+  \mathrm{Cov}(X_{S_1},X_{S_2}) = \E(X_{S_1}X_{S_2}) - \E(X_{S_1})\E(X_{S_2}) = p^{11} - p^{12}.
+\end{align*}
+Similarly, if $|S_1\cap S_2| = 3$, then there are $9$ edges in $S_1\cup S_2$ if they are both cliques. Thus:
+\begin{align*}
+  \mathrm{Cov}(X_{S_1},X_{S_2}) = \E(X_{S_1}X_{S_2}) - \E(X_{S_1})\E(X_{S_2}) = p^9 - p^{12}.
+\end{align*}
+And $\Var(X_S) = \E(X_S^2)-(\E(X_S))^2 = p^6-p^{12}$. So:
+\begin{align*}
+  \Var(X) &= \sum_S (p^6 - p^{12}) + \sum_{|S_1\cap S_2|=2} (p^{11} - p^{12}) + \sum_{|S_1\cap S_2|=3} (p^9 - p^{12}) \\
+  &= \binom{n}{4}(p^6 - p^{12}) + \binom{n}{6}(p^{11} - p^{12}) + \binom{n}{5}(p^9 - p^{12})
+\end{align*}
+Therefore, by the result of 1\ref{1.b}, we have:
+\begin{align*}
+  \lim_{n \to \infty}\Pr(X=0) &\le \lim_{n \to \infty}\frac{\Var(X)}{(\E(X))^2}\\
+  &= \lim_{n \to \infty}\frac{\binom{n}{4}(p^6 - p^{12}) + \binom{n}{6}(p^{11} - p^{12}) + \binom{n}{5}(p^9 - p^{12})}{{\binom{n}{4}}^2 p^{12}}\\
+  &= \lim_{n \to \infty}C\frac{n^4(p^6 - p^{12}) + n^6(p^{11} - p^{12}) + n^5(p^9 - p^{12})}{n^8 p^{12}}\\
+  &= \lim_{n \to \infty}C\bigl( n^{-4}p^{-6}- n^{-4} + n^{-2}p^{-1} - n^{-2} + n^{-3}p^{-3} - n^{-3} \bigr)\\
+\end{align*}
+Where $C$ is constant.
+
+Since $p=\omega(n^{-2/3})$, we know that $p^{-1} = o(n^{2/3})$. So we have:
+\begin{align*}
+  \lim_{n \to \infty}\Pr(X=0) &\le\lim_{n \to \infty}C\bigl( n^{-4}p^{-6}- n^{-4} + n^{-2}p^{-1} - n^{-2} + n^{-3}p^{-3} - n^{-3} \bigr)\\
+  &= \lim_{n \to \infty}C\bigl(o(1)-n^{-4} + o(n^{-4/3})-n^{-2} + o(n^{-1}) - n^{-3}\bigr) \\
+  &= \lim_{n \to \infty}Co(1) \\
+  &= 0.
+\end{align*}
+As the probability is non-negative, so the limit is $0$.
+\end{solution}
+
+\end{document}

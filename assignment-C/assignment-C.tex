@@ -1,0 +1,128 @@
+\documentclass{homework}
+
+\name{Zhang Chi} % Replace (Student Name) with your name.
+\id{2022010754}
+\term{2024 Spring}
+\course{Introduction to Theoretical Computer Science}
+\hwnum{12}
+
+%\hwname{(Name)}          % Uncomment and replace (Name) with the type of the
+                          % homework (e.g, Assignment, Problem Set, etc.) if you
+                          % don't want the document to be labeled as "Homework."
+%\problemname{(Name)}     % Uncomment and replace (Name) with the desired label
+                          % for problems created with the problem environment.
+%\solutionname{(Name)}    % Uncomment and replace (Name) with the desired label
+                          % for solutions created with the solution environment.
+
+% Load any other packages you need here.
+
+\begin{document}
+
+\begin{problem}
+  Let $G$ be a pseudorandom generator of stretch $\ell$ such that $\ell(n) \ge 2n$.
+  \begin{parts}
+    \part\label{1.a} Define $G'$ as $G'(s) = G(s 0^{\abs{s}})$.
+    Is $G'$ necessarily a pseudorandom generator?
+    \part\label{1.b} Define $G''$ as $G''(s) = G(s_{1} \cdots s_{n/2})$ for
+    $s = s_{1} s_{2} \cdots s_{n}$.
+    Is $G''$ necessarily a pseudorandom generator?
+  \end{parts}
+\end{problem}
+
+\begin{solution}
+\ref{1.a} No. We will give a counterexample below. Consider another PRG $H$ with stretch $\ell$, and define $G$ as: on input $x$ with length $|x|=2n$:
+\begin{align*}
+  G(x) = \begin{cases}
+    0^{\ell(2n)} & \text{if } x_{n+1},...,x_{2n}=0 \\
+    H(x) & \text{else}
+  \end{cases}
+\end{align*}
+We will now prove that this $G$ is a PRG. We have:
+\begin{align*}
+  &\Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(G(x))=1\bigr) \\
+  =& \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(G(x))=1\big|x_{n+1},...,x_{2n}=0\bigr)\Pr\bigl(x_{n+1},...,x_{2n}=0\bigr)\\
+  &+ \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(G(x))=1\big|x_{n+1},...,x_{2n}\text{ not all }0\bigr)\Pr\bigl(x_{n+1},...,x_{2n}\text{ not all }0\bigr)\\
+  =& \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(0)=1\big|x_{n+1},...,x_{2n}=0\bigr)\Pr\bigl(x_{n+1},...,x_{2n}=0\bigr)\\
+  &+ \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(H(x))=1\big|x_{n+1},...,x_{2n}\text{ not all }0\bigr)\Pr\bigl(x_{n+1},...,x_{2n}\text{ not all }0\bigr)\\
+  =& \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(0)=1\bigr)\times 2^{-n} + \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(H(x))=1\bigr)\times (1-2^{-n})\\
+\end{align*}
+Thus:
+\begin{align*}
+  &\abs{\Pr_{s\in\{0,1\}^{2n}}\bigl(\mathcal{A}(G(x))=1\bigr) - \Pr_{r\in\{0,1\}^{\ell(2n)}}\bigl(\mathcal{A}(r)=1\bigr)}\\
+  =&\bigg|\Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(0)=1\bigr)\times 2^{-n} + \Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(H(x))=1\bigr)\times (1-2^{-n}) \\
+  &- \Pr_{r\in\{0,1\}^{\ell(2n)}}\bigl(\mathcal{A}(r)=1\bigr)\bigg|\\
+  \le &(1-2^{-n})\abs{\Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(H(x))=1\bigr) - \Pr_{r\in\{0,1\}^{\ell(2n)}}\bigl(\mathcal{A}(r)=1\bigr)}\\
+  &+ 2^{-n}\abs{\Pr_{x\in\{0,1\}^{2n}}\bigl(\mathcal{A}(0)=1\bigr)-\Pr_{r\in\{0,1\}^{\ell(2n)}}\bigl(\mathcal{A}(r)=1\bigr)}\\
+  \le& (1-2^{-n})\text{negl}(2n) + 2^{-n}\times 1\\
+  =& \text{negl}(2n)
+\end{align*}
+Then consider $G'$ with this $G$. We have $G'(s) = G(s0^{|s|}) = 0^{\ell{2n}}$ by definition, so for any input $s$ the encoding of $G'$ is always constant, which means $G'$ is not a PRG (we can set $\mathcal{A}$ to output $1$ if and only if the input is all $0$).
+
+\ref{1.b} Yes. Since $G''(s)=G(s_{1}\cdots s_{\frac{n}{2}})$ only depends on the first half of input $s$, and is independent with $s_{\frac{n}{2}+1},..., s_n$, so we have:
+\begin{align*}
+  &\Pr_{s\in\{0,1\}^n}\bigl(\mathcal{A}(G''(s))=1\bigr) = \Pr_{s_1,s_2,...,s_n\in\{0,1\}}\bigl(\mathcal{A}(G(s_{1}\cdots s_{\frac{n}{2}}))=1\bigr)\\
+  =& \sum_{s_{\frac{n}{2}+1},..., s_n\in\{0,1\}}\Pr_{s_1,...,s_{\frac{n}{2}}\in\{0,1\}}\bigl(\mathcal{A}(G(s_{1} \cdots s_{\frac{n}{2}}))=1\big| s_{\frac{n}{2}+1} \cdots s_n\bigr)\Pr(s_{\frac{n}{2}+1},...,s_n)\\
+  =&\Pr_{s_1,...,s_{\frac{n}{2}}\in\{0,1\}}\bigl(\mathcal{A}(G(s_{1} \cdots s_{\frac{n}{2}}))=1\bigr)\sum_{s_{\frac{n}{2}+1},..., s_n\in\{0,1\}} \Pr(s_{\frac{n}{2}+1},...,s_n)\\
+  =&\Pr_{s_1,...,s_{\frac{n}{2}}\in\{0,1\}}\bigl(\mathcal{A}(G(s_{1} \cdots s_{\frac{n}{2}}))=1\bigr)
+\end{align*}
+Meanwhile, as $|G''(s)| = |G(s_1\cdots s_{\frac{n}{2}})| = \ell(\frac{n}{2}) = \ell''(n)$, so we have:
+\begin{align*}
+  &\abs{\Pr_{s\in\{0,1\}^n}\bigl(\mathcal{A}(G''(s))=1\bigr) - \Pr_{r\in\{0,1\}^{\ell''(n)}}\bigl(\mathcal{A}(r)=1\bigr)}\\
+  =& \abs{\Pr_{s_1,...,s_{\frac{n}{2}}\in\{0,1\}}\bigl(\mathcal{A}(G(s_{1} \cdots s_{\frac{n}{2}}))=1\bigr) - \Pr_{r\in\{0,1\}^{\ell(\frac{n}{2})}}\bigl(\mathcal{A}(r)=1\bigr)}\\
+  =&\text{negl}(\frac{n}{2})\\
+  =&\text{negl}(n)
+\end{align*}
+The second last line is due to the fact that $G$ is a PRG. Thus $G''$ is also a PRG.
+\end{solution}
+
+\begin{problem}
+  A keyed family of functions $F_{k}$ is a pseudorandom random permutation (PRP)
+  if (a) $F_{k}(\cdot)$ and $F^{-1}_{k}(\cdot)$ are efficiently computable given
+  the key $k$ and (b) for any polynomial-time algorithm $\adv$,
+  \begin{equation*}
+    \abs{\Pr \Bigl( \adv^{F_{k}(\cdot), F^{-1}_{k}(\cdot)}(1^{n}) = 1 \Bigr) -
+      \Pr \Bigl( \adv^{f_{n}(\cdot), f^{-1}_{n}(\cdot)}(1^{n}) = 1 \Bigr)}
+    \le \negl(n).
+  \end{equation*}
+  Consider the following encryption scheme
+  \begin{enumerate}
+    \item Sample key $k$ uniformly at random.
+    \item On input plaintext $x \in {\{0,1\}}^{n/2}$, algorithm $\Enc_{k}$
+          samples randomness $r \in {\{0,1\}}^{n/2}$ and outputs ciphertext
+          $F_{k}(r \| x)$.
+  \end{enumerate}
+  Solve the following problems assuming that $F_{k}$ is a PRP\@.
+  \begin{parts}
+    \part\label{2.a} Show how the decryption $\Dec_{k}$ works.
+    \part\label{2.b} Prove that the encryption scheme is CPA-secure.
+  \end{parts}
+
+\end{problem}
+
+\begin{solution}
+\ref{2.a} Consider $\Dec_k: y\mapsto \bigl(F_k^{-1}(y)\bigr)[\frac{n}{2}+1:n]$ where "$[i:j]$" means taking the $i$-th to $j$-th bit. Then for any plaintext $x\in\{0,1\}^{n/2}$, we have $\Dec_k(\Enc_k(x)) = \bigl(F_k^{-1}(F_k(r\|x))\bigr)[\frac{n}{2}+1:n] = (r\|x)[\frac{n}{2}+1:n] = x$.
+
+\ref{2.b} Consider $\widetilde{\Pi} = (\widetilde{\Enc}, \widetilde{\Dec})$ where real random function $f_n$ is used, and $\Pi$ where $F_k$ is used. If $\Pi$ is not CPA, then there is some adversary $\mathcal{A}$ with the encryption oracle that can attack $\Pi$, which means $\Pr(A_{\Pi}\text{ succ}) \ge 1/2 + 1/\text{poly}(n)$. 
+
+Consider $\mathcal{A}_{\widetilde{\Pi}}$. It's success rate is strictly $1/2$ if it has not queried $\Enc$ using the same random $r$ with the one used in the actual encryption. Meanwhile, the probability of the occurence of using the same random $r$ is $q(n)/2^n$ where $q(n)$ is the number of queries $\mathcal{A}$ makes to $\Enc$, which should be polynomial. Thus: $\Pr(\mathcal{A}_{\widetilde{\Pi}}\text{ succ}) \le 1/2 + q(n)/2^n = 1/2 + \text{negl}(n)$.
+
+Using the above adversaries, We can construct a poly-time distinguisher $D$ between $(F_k,F_k^{-1})$ and $(f_n,f_n^{-1})$ with oracles $O_1,O_2$ and input $1^n$:
+
+1. Run $\mathcal{A}(1^n)$, whenever encryption is called with input $x$, answer with $O_1(r\|x)$ where $r$ is randomly sampled from $\{0,1\}^{n}$.
+
+2. When $\mathcal{A}$ outputs $x_0,x_1$, choose random bit $b$, feed $O_1(r\|x_b)$ to $\mathcal{A}$ and get output $b'$.
+
+3. Output $1_{b=b'}$.
+
+Then, we know that $\Pr(D^{F_k,F_k^{-1}}(1^n)=1) = \Pr(\mathcal{A}_{\Pi}\text{ succ})$, and $\Pr(D^{f_n,f_n^{-1}}(1^n)=1) = \Pr(\mathcal{A}_{\widetilde{\Pi}}\text{ succ})$.
+
+So:
+\begin{align*}
+    & \abs{\Pr \bigl(D^{f_n,f_n^{-1}}(1^n) = 1 \bigr) -\Pr \bigl(D^{F_k,F_k^{-1}}(1^n) = 1 \bigr)} \\
+    = & \abs{\Pr \bigl(\adv_{\widetilde{\Pi}} \text{ succ}\bigr) -\Pr \bigl(\adv_{\Pi} \text{ succ} \bigr)}\\
+    = & \frac{1}{\poly(n)}.
+\end{align*}
+which raises contradiction to the fact that $F_k$ is PRP. Thus, the encryption scheme is CPA-secure.
+\end{solution}
+
+\end{document}
